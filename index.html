@@ -32,28 +32,38 @@
 <body>
     <div class="wrapper">
         <div>
-            <div>
+            <!-- <div>
                 <input type="text" name="text1" id="text1" />
             </div>
-            <div>
-                <input type="file" name="pic" id="pic">
-            </div>
+            <div><input type="file" name="pic" id="pic"></div>
             <button id="save">保存</button>
             <div id="textDisplay"></div>
             <img id="preview" width="300px">
+        </div> -->
+            <div>
+                <div><input type="file" name="pic1" id="pic1"></div>
+                <img id="preview1" width="300px" />
+                <div><input type="file" name="pic2" id="pic2"></div>
+                <img id="preview2" width="300px" />
+                <div><input type="file" name="pic3" id="pic3"></div>
+                <img id="preview3" width="300px" />
+                <div><input type="file" name="pic4" id="pic4"></div>
+                <img id="preview4" width="300px" />
+                <div><input type="file" name="pic5" id="pic5"></div>
+                <img id="preview5" width="300px" />
+            </div>
         </div>
-    </div>
 
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('js/serviceworker.js').then(function (registration) {
-                console.log('ServiceWorker registration successful with scope: ', registration.scope);
-            }).catch(function (err) {
-                console.log('ServiceWorker registration failed: ', err);
-            });
-        }    
-    </script>
-    <script src="js/count.js"></script>
+        <script>
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('js/serviceworker.js').then(function (registration) {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }).catch(function (err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            }    
+        </script>
+        <script src="js/count.js"></script>
 </body>
 
 </html>
