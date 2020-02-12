@@ -2,7 +2,7 @@ var dbName = 'sampleDB';
 var dbVersion = '1';
 var storeName = 'counts';
 var text = "";
-var piv = null;
+var pic = null;
 //　DB名を指定して接続
 var openReq = indexedDB.open(dbName, dbVersion);
 
@@ -36,23 +36,27 @@ openReq.onsuccess = function (event) {
     }
     getReq.onsuccess = function (event) {
         console.log('取得成功');
-        if (typeof event.target.result === 'undefined') {
-            text = "";
-        } else {
+ 
+        if (typeof event.target.result !== 'undefined') {
             text = event.target.result.text;
+            pic = event.target.result.pic;
             console.log(text);
         }
+        
         document.getElementById('textDisplay').innerHTML = text;
+        document.getElementById('preview').src = URL.createObjectURL(new Blob([pic], { type: "image/jpeg" }));
     }
 
     document.getElementById('save').addEventListener('click', function () {
         text = document.getElementById('text1').value;
-        pic = document.getElementById('pic').value;
-        var putReq = updateDb(db, storeName, text);
+        var putReq = updateDb(db, storeName, text, pic);
 
         putReq.onsuccess = function (event) {
             console.log('更新成功');
             document.getElementById('textDisplay').innerHTML = text;
+            if (pic != null) {
+                document.getElementById('preview').src = URL.createObjectURL(new Blob([pic], { type: "image/jpeg" }));
+            }
         }
         putReq.onerror = function (event) {
             console.log('更新失敗');
@@ -62,9 +66,9 @@ openReq.onsuccess = function (event) {
     document.getElementById('pic').addEventListener('change', function (e) {
         var reader = new FileReader();
         reader.onload = function (e) {
-            document.getElementById('preview').src = e.target.result;
+            pic = reader.result;
         }
-        reader.readAsDataURL(e.target.files[0]);
+        reader.readAsArrayBuffer(e.target.files[0]);
     });
 }
 
