@@ -1,9 +1,10 @@
 var dbName = 'sampleDB';
 var dbVersion = '1';
-var storeName  = 'counts';
-var count = 0;
+var storeName = 'counts';
+var text = "";
+var piv = null;
 //　DB名を指定して接続
-var openReq  = indexedDB.open(dbName, dbVersion);
+var openReq = indexedDB.open(dbName, dbVersion);
 
 // エラー時
 openReq.onerror = function (event) {
@@ -14,9 +15,10 @@ openReq.onerror = function (event) {
 //DBのバージョン更新(DBの新規作成も含む)時のみ実行
 openReq.onupgradeneeded = function (event) {
     var db = event.target.result;
-    const objectStore = db.createObjectStore(storeName, {keyPath : 'id'})
+    const objectStore = db.createObjectStore(storeName, { keyPath: 'id' })
     objectStore.createIndex("id", "id", { unique: true });
-    objectStore.createIndex("cnt", "cnt", { unique: false });
+    objectStore.createIndex("text", "text", { unique: false });
+    objectStore.createIndex("pic", "pic", { unique: false });
 
     console.log('db upgrade');
 }
@@ -29,66 +31,49 @@ openReq.onsuccess = function (event) {
     var getReq = store.get(1);
 
     getReq.onerror = function (event) {
-        count = 0;
+        text = 0;
         console.log('取得失敗');
     }
     getReq.onsuccess = function (event) {
         console.log('取得成功');
         if (typeof event.target.result === 'undefined') {
-            count = 0;
+            text = "";
         } else {
-            count = event.target.result.cnt;
-            console.log(count);
+            text = event.target.result.text;
+            console.log(text);
         }
-        document.getElementById('countDisplay').innerHTML = count;
+        document.getElementById('textDisplay').innerHTML = text;
     }
 
-
-    document.getElementById('countUp').addEventListener('click', function () {
-        count++;
-        var putReq = updateDb(db, storeName, count);
+    document.getElementById('save').addEventListener('click', function () {
+        text = document.getElementById('text1').value;
+        pic = document.getElementById('pic').value;
+        var putReq = updateDb(db, storeName, text);
 
         putReq.onsuccess = function (event) {
             console.log('更新成功');
-            document.getElementById('countDisplay').innerHTML = count;
+            document.getElementById('textDisplay').innerHTML = text;
         }
         putReq.onerror = function (event) {
             console.log('更新失敗');
         }
     });
 
-    document.getElementById('countDown').addEventListener('click', function () {
-        count--;
-        var putReq = updateDb(db, storeName, count);
-
-        putReq.onsuccess = function (event) {
-            console.log('更新成功');
-            document.getElementById('countDisplay').innerHTML = count;
+    document.getElementById('pic').addEventListener('change', function (e) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            document.getElementById('preview').src = e.target.result;
         }
-        putReq.onerror = function (event) {
-            console.log('更新失敗');
-        }
+        reader.readAsDataURL(e.target.files[0]);
     });
-
-    document.getElementById('countReset').addEventListener('click', function () {
-        count = 0;
-        var putReq = updateDb(db, storeName, count);
-
-        putReq.onsuccess = function (event) {
-            console.log('更新成功');
-            document.getElementById('countDisplay').innerHTML = count;
-        }
-        putReq.onerror = function (event) {
-            console.log('更新失敗');
-        }
-    });    
 }
 
-function updateDb (db, store_name, cnt) {
+function updateDb(db, store_name, text, pic) {
     var trans = db.transaction(store_name, "readwrite");
     var store = trans.objectStore(store_name);
     return store.put({
         id: 1,
-        cnt: cnt
+        text: text,
+        pic: pic
     });
 }
